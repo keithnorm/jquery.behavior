@@ -1,0 +1,132 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>Lowpro for jQuery Demo</title>
+
+  <!-- include source files here... -->
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
+  <script type="text/javascript" src="lib/jquery_ui.js"></script>
+  
+  <script type="text/javascript" src="src/jquery.behavior.js"></script>
+
+  <script type="text/javascript">
+
+    $.behavior('ui.colorChangeBehavior', {
+      _init: function() {
+        this.element //the bound element
+      },
+
+      onclick: function(e) {
+        e.preventDefault();
+        this.element.css({color: '#' + this._randomHex()});
+      },
+
+      _randomHex: function() {
+        return Math.floor(Math.random()*16777215).toString(16);
+      }
+
+    });
+
+    $.behavior('ui.animal', {
+      onclick: function() {
+        this.speak();
+      }
+    });
+
+    $.behavior('ui.dog', $.ui.animal, {
+      speak: function() {
+        console.log('woof');
+      }
+    });
+
+    $(function() {
+      $('#div1 a, #list li').colorChangeBehavior();
+      $('#list li').dog();
+      $('#add_item').click(function() {
+        $('#list').append($('#list li:first').clone().html('list item ' + ($('#list li').length + 1).toString()));
+      });
+    });
+  </script>
+
+  <style type="text/css">
+    body {
+      background-color: #B8B8AF;
+      font-family: Helvetica;
+    }
+    #container {
+      width: 500px;
+      margin: 0 auto;
+    }
+
+    .example {
+      padding: 20px;
+      background: #f1f1f1;
+      margin-bottom: 20px;
+    }
+
+    #twitter_trends p {
+      padding: 3px;
+    }
+  </style>
+
+
+</head>
+<body>
+
+  <div id = "container">
+    <div class="example" id="div1">
+      <h1>Bind Events</h1>
+        <pre>
+        <code>
+ $.behavior('ui.colorChangeBehavior', {
+  _init: function() {
+    this.element //the bound element
+  },
+
+  onclick: function(e) {
+    e.preventDefault();
+    this.element.css({color: '#' + this._randomHex()});
+  },
+
+  //private
+  _randomHex: function() {
+    return Math.floor(Math.random()*16777215).toString(16);
+  }
+  
+});      
+
+$('a').colorChangeBehavior();
+      </code>
+      </pre>
+      <a href="#">Click me</a>
+    </div>
+
+
+    
+    <div class="example" id="behavior_delegation">
+      <h1>Behaviors automagically get bound to elements added at any time</h1>
+<pre>
+<code>
+$('#list li').colorChangeBehavior();
+</code>
+</pre>
+    <ul id="list">
+      <li>list item 1</li>
+      <li>list item 2</li>
+      <li>list item 3</li>
+    </ul>
+
+      <a id="add_item" href="javascript:void(0);">add item</a>
+
+    </div>
+    
+    
+  </div>
+    
+  </div>
+
+
+</body>
+</html>
+
