@@ -2,7 +2,7 @@
   "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-  <title>Lowpro for jQuery Demo</title>
+  <title>jQuery Behavior Demo</title>
 
   <!-- include source files here... -->
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
@@ -12,7 +12,7 @@
 
   <script type="text/javascript">
 
-    $.behavior('ui.colorChangeBehavior', {
+    $.behavior('demo.colorChangeBehavior', {
       _init: function() {
         this.element //the bound element
       },
@@ -28,13 +28,13 @@
 
     });
 
-    $.behavior('ui.animal', {
+    $.behavior('demo.animal', {
       onclick: function() {
         this.speak();
       }
     });
 
-    $.behavior('ui.dog', $.ui.animal, {
+    $.behavior('demo.dog', $.demo.animal, {
       speak: function() {
         console.log('woof');
       }
@@ -79,7 +79,7 @@
       <h1>Bind Events</h1>
         <pre>
         <code>
- $.behavior('ui.colorChangeBehavior', {
+ $.behavior('demo.colorChangeBehavior', {
   _init: function() {
     this.element //the bound element
   },
