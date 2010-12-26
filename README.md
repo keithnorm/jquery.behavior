@@ -5,7 +5,7 @@ A Lowpro style behavior implementation built on top of jQuery UI's widget factor
 I like encapsulating behavior into classes. I've gotten used to Lowpro's Behavior class and I've been using it in jQuery, then I realized that jQuery UI's $.widget method was doing the same thing as Prototype's Class.create, sort of, so I extended it into $.behavior. This lets you have stateful objects just like jQuery UI but sprinkles in automatic event methods and delegation like Lowpro's Behaviors. It's basically $.widget with some automatic event binding.
 
 ## How?
-    $.behavior('ui.colorChangeBehavior', {
+    $.behavior('demo.colorChangeBehavior', {
       _init: function() {
         this.initialColor = 'red';
         this.element.css({color: this.initialColor});
@@ -30,13 +30,13 @@ Behaviors get bound to elements in two ways, One is by calling the behavior meth
 ## Inheritance
 Since this sits on top of $.widget, you get everything that it can do, so inheritance works like this:
 
-    $.behavior('ui.animal', {
+    $.behavior('demo.animal', {
       onclick: function() {
         this.speak();
       }
     });
 
-    $.behavior('ui.dog', $.ui.animal, {
+    $.behavior('demo.dog', $.demo.animal, {
       speak: function() {
         console.log('woof');
       }
