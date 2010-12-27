@@ -1,32 +1,32 @@
 $.behavior('ujs.remote', {
-  _init: function(options) {
+  _init: function() {
     if(this.element.attr('nodeName').toLowerCase() === 'form'){
-      this.element.remoteForm(options);
+      this.element.remoteForm(this.options);
     }
     else
-      this.element.remoteLink(options);
+      this.element.remoteLink(this.options);
   }
 });
 
 $.behavior('ujs.remoteBase', {
-  _init: function(options) {
+  _init: function() {
     var self = this;
-    this.options = $.extend({
+    this.ajaxOptions = {
       beforeSend: function(xhr) {
-        if(self.element.trigger('beforeSend') === false) {
+        if(self._trigger('beforeSend') === false) {
           return false;
         }
       },
-      success: function(data, status, xhr) {
-        self.element.trigger('success', [data, status, xhr]);
+      success: function(response) {
+        self._trigger('success', null, response);
       },
       complete: function(xhr) {
-        self.element.trigger('complete', xhr);
+        self._trigger('complete', null, xhr);
       },
       error: function(xhr, status, error) {
-        self.element.trigger('error', [xhr, status, error]);
+        self._trigger('error', null, [xhr, status, error]);
       }
-    }, options);
+    };
   },
 
   _makeRequest : function(options) {
@@ -37,11 +37,11 @@ $.behavior('ujs.remoteBase', {
 
 $.behavior('ujs.remoteLink', $.ujs.remoteBase, {
   onclick: function() {
-    var options = $.extend({
+    var ajaxOptions = $.extend({
       url: this.element.attr('href'),
       type: 'GET'
-    }, this.options);
-    return this._makeRequest(options);
+    }, this.ajaxOptions);
+    return this._makeRequest(ajaxOptions);
   }
 });
 
@@ -58,13 +58,13 @@ $.behavior('ujs.remoteForm', $.ujs.remoteBase, {
         value: this._submitButton.value
       });
 
-    var options = $.extend({
+    var ajaxOptions = $.extend({
       url: this.element.attr('action'),
       type: this.element.attr('method') || 'GET',
       data: data
-    }, this.options);
+    }, this.ajaxOptions);
 
-    this._makeRequest(options);
+    this._makeRequest(ajaxOptions);
     return false;
   }
 
@@ -112,4 +112,10 @@ $.behavior('ujs.confirm', {
     if(!confirm(this.element.data('confirm')))
       return false;
   }
+});
+
+$(function() {
+  $('[data-confirm]').confirm();
+  $('[data-remote]').remote();
+  $('a[data-method]:not([data-remote])').formLink();
 });

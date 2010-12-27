@@ -39,22 +39,21 @@
 
     $.behavior('demo.dog', $.demo.animal, {
       speak: function() {
-        console.log('woff');
       }
     });
 
     $(function() {
       $('#div1 a, #list li').colorChangeBehavior();
       $('#list li').dog();
-      $('[data-remote]').remote().bind('success', function(response) {
-      }).bind('error', function(response) {
-      });
-
-      $('a[data-method]:not([data-remote])').formLink();
-      
       $('#add_item').click(function() {
         $('#list').append($('#list li:first').clone().html('list item ' + ($('#list li').length + 1).toString()));
       });
+
+      //here's how to listen for events on behaviors
+      $('[data-remote]').bind('remoteformsuccess remotelinksuccess', function(e, response) {
+        console.log(e, response);
+      });
+      
     });
   </script>
 
