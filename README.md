@@ -27,6 +27,11 @@ I like encapsulating behavior into classes. I've gotten used to Lowpro's Behavio
 ## Delegation
 Delegation is now done in the way that JavascriptMVC does it.
     
+    //Given this HTML
+    //<ul class="tabs">
+    //  <li>tab 1</li>
+    //  <li>tab 2</li>
+    //</ul>
     $.behavior('demo.tabs', {
       'li click': function() {
         this._showPanel(e.target);
@@ -36,6 +41,8 @@ Delegation is now done in the way that JavascriptMVC does it.
         //etc...
       }
     });
+
+    $('.tabs').tabs();
 
 ## Inheritance
 Since this sits on top of $.widget, you get everything that it can do, so inheritance works like this:
