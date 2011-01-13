@@ -62,4 +62,9 @@ describe('$.widget', function() {
 
   });
 
+  it('stores instances on the constructors instances array', function() {
+   html.clicker();
+   expect($.ui.clicker.instances.length).toEqual(1);
+  });
+
 });

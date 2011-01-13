@@ -50,18 +50,26 @@
     var plugin = $.fn[ name ];
 
     $.fn[ name ] = function( options ) {
-      var behavior = $[ namespace ][ name ].prototype;
-      $.each(behavior._bindings(), $.proxy(function(i, binding) {
-        var handler = function(event) {
-          if(!$(this).data(name)) {
-            var instance = $(this)[name].call($(this)).data(name);
-            instance[event.type].call(instance, event, this);
-          }
-        };
-        if(!binding.target)
-          $(this.selector).live(binding.event, handler);
-      }, this));
-      return plugin.call(this, options);
+      if(this.length > 0){
+        var behavior = $[ namespace ][ name ].prototype;
+        $.each(behavior._bindings(), $.proxy(function(i, binding) {
+          var handler = function(event) {
+            if(!$(this).data(name)) {
+              var instance = $(this)[name].call($(this)).data(name);
+              instance[event.type].call(instance, event, this);
+            }
+          };
+          if(!binding.target)
+            $(this.selector).live(binding.event, handler);
+        }, this));
+        var returnVal = plugin.call(this, options);
+        $.each(this, function(i, el) {
+          $[ namespace ][ name ].instances.push($(el).data(name));
+        });
+        return returnVal;
+      }
+      else 
+        return this;
     };
   };
 
