@@ -36,7 +36,7 @@ $.behavior('ujs.remoteBase', {
 });
 
 $.behavior('ujs.remoteLink', $.ujs.remoteBase, {
-  onclick: function() {
+  click: function() {
     var ajaxOptions = $.extend({
       url: this.element.attr('href'),
       type: 'GET'
@@ -46,11 +46,11 @@ $.behavior('ujs.remoteLink', $.ujs.remoteBase, {
 });
 
 $.behavior('ujs.remoteForm', $.ujs.remoteBase, {
-  onclick: function(e) {
+  click: function(e) {
     this._submitButton = e.target;
   },
 
-  onsubmit: function() {
+  submit: function() {
     var data = this.element.serializeArray();
     if(this._submitButton && $(this._submitButton).attr('value'))
       data.push({
@@ -92,7 +92,7 @@ $.behavior('ujs.formLink', $.ujs.railsBase, {
     });
   },
 
-  onclick: function(e) {
+  click: function(e) {
     e.preventDefault();
     var form = $('<form/>').attr(this.options.form).append($('<input/>').attr(this.options.meta));
 
@@ -108,7 +108,7 @@ $.behavior('ujs.formLink', $.ujs.railsBase, {
 });
 
 $.behavior('ujs.confirm', {
-  onclick: function(e) {
+  click: function(e) {
     if(!confirm(this.element.data('confirm')))
       return false;
   }

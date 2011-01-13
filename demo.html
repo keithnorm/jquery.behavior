@@ -20,7 +20,7 @@
         this.element //the bound element
       },
 
-      onclick: function(e) {
+      click: function(e) {
         e.preventDefault();
         this.element.css({color: '#' + this._randomHex()});
       },
@@ -32,7 +32,7 @@
     });
 
     $.behavior('demo.animal', {
-      onclick: function() {
+      click: function() {
         this.speak();
       }
     });
@@ -41,6 +41,26 @@
       speak: function() {
       }
     });
+
+    $.behavior('demo.tabs', {
+      _init: function() {
+        console.log('init');
+      },
+
+      click: function() {
+        console.log('general click');
+      },
+
+      'li click': function(e) {
+        console.log('li click');
+      },
+
+      'li a mouseenter': function() {
+        console.log('mouseenter');
+      }
+    });
+
+
 
     $(function() {
       $('#div1 a, #list li').colorChangeBehavior();
@@ -86,6 +106,7 @@
 
     <div class="example" id="div1">
       <h1>Bind Events</h1>
+
         <pre>
         <code>
  $.behavior('demo.colorChangeBehavior', {

@@ -7,7 +7,7 @@ describe('$.widget', function() {
       _init: function() {
       },
 
-      onclick: function() {
+      click: function() {
         clicked = true;
       }
     });
@@ -31,6 +31,35 @@ describe('$.widget', function() {
     $('p.clicker').click();
     expect(clicked).toBeTruthy();
     expect($('p.clicker').data('clicker') instanceof $.ui.clicker).toBeTruthy();
+  });
+
+  describe('delegation', function() {
+    beforeEach(function() {
+      clicked = clickedP = false;
+      $.behavior('test.clickerWithDelegation', {
+        click: function() {
+          clicked = true;
+        },
+
+        'p click': function() {
+          clickedP = true;
+        }
+      });
+
+    });
+
+    it('delegates events', function() {
+      html = $('<div id="clicker"><h1>header</h1><p>paragraph</p></div>');
+      $('#fixtures').html(html);
+      $('#clicker').clickerWithDelegation();
+      expect(clicked).toBeFalsy();
+      $('#clicker').click();
+      expect(clicked).toBeTruthy();
+      expect(clickedP).toBeFalsy(); //still
+      $('#clicker p').click();
+      expect(clickedP).toBeTruthy();
+    });
+
   });
 
 });

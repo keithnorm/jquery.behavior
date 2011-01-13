@@ -30,7 +30,7 @@ describe('jquery-rails style behaviors', function() {
     it('calls ajax with url of the href of the link', function() {
       spyOn(jQuery, 'ajax');
       link.click();
-      var expectedOptions = $.extend(link.data('remoteLink').options, {
+      var expectedOptions = $.extend(link.data('remoteLink').ajaxOptions, {
         url: link.attr('href'),
         type: 'GET'
       });
@@ -43,7 +43,7 @@ describe('jquery-rails style behaviors', function() {
       spyOn(jQuery, 'ajax');
       form.attr('method', 'POST');
       form.submit();
-      var expectedOptions = $.extend(form.data('remoteForm').options, {
+      var expectedOptions = $.extend(form.data('remoteForm').ajaxOptions, {
         url: form.attr('action'),
         type: form.attr('method'),
         data: form.serializeArray()
@@ -65,7 +65,7 @@ describe('jquery-rails style behaviors', function() {
       });
 
       formBehavior._submitButton = button[0];
-      var expectedOptions = $.extend(form.data('remoteForm').options, {
+      var expectedOptions = $.extend(form.data('remoteForm').ajaxOptions, {
         url: form.attr('action'),
         type: form.attr('method'),
         data: form.serializeArray(),

@@ -1,15 +1,25 @@
 (function($) {
 
   $.extend($.Widget.prototype, {
-    _eventMethods: function() {
-      var methods = [], prop;
+    _bindings: function() {
+      var bindings = [], prop;
       for(prop in this) {
-        if(prop.match(/^on(.+)/) && $.type(this[prop]) == 'function')
-          methods.push(prop);
+        if(prop.match($.Widget.revent) && $.type(this[prop]) == 'function'){
+          var target = RegExp.$1, event = RegExp.$2;
+          bindings.push({
+            method: this[prop],
+            target: target,
+            event: event
+          });
+        }
       }
-      return methods;
+      return bindings;
     }
   });
+
+  $.extend($.Widget, {
+    revent: /([\w\s]+)?(change|click|contextmenu|dblclick|keydown|keyup|keypress|mousedown|mousemove|mouseout|mouseover|mouseup|reset|windowresize|resize|windowscroll|scroll|select|submit|dblclick|focusin|focusout|load|unload|ready|hashchange|mouseenter|mouseleave)/
+  }); 
 
   $.behavior = function(name, base, prototype) {
     $.widget(name, base, prototype);
@@ -21,8 +31,12 @@
     $[ namespace ][ name ] = function(options, element) {
       if ( arguments.length ) {
         object.call(this, options, element);
-        $.each(this._eventMethods(), $.proxy(function(i, method){
-          this.element.bind(method.replace('on', ''), $.proxy(this[method], this));
+        $.each(this._bindings(), $.proxy(function(i, binding){
+          var handler = $.proxy(binding.method, this);
+          if(binding.target)
+            this.element.delegate(binding.target, binding.event, handler);
+          else
+            this.element.bind(binding.event, handler);
         }, this));
       }
     };
@@ -37,13 +51,15 @@
 
     $.fn[ name ] = function( options ) {
       var behavior = $[ namespace ][ name ].prototype;
-      $.each(behavior._eventMethods(), $.proxy(function(i, method) {
-        $(this.selector).live(method.replace('on', ''), function(event) {
+      $.each(behavior._bindings(), $.proxy(function(i, binding) {
+        var handler = function(event) {
           if(!$(this).data(name)) {
             var instance = $(this)[name].call($(this)).data(name);
-            instance['on' + event.type].call(instance, event, this);
+            instance[event.type].call(instance, event, this);
           }
-        });
+        };
+        if(!binding.target)
+          $(this.selector).live(binding.event, handler);
       }, this));
       return plugin.call(this, options);
     };
