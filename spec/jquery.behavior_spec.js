@@ -45,7 +45,6 @@ describe('$.widget', function() {
           clickedP = true;
         }
       });
-
     });
 
     it('delegates events', function() {

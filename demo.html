@@ -44,25 +44,37 @@
 
     $.behavior('demo.tabs', {
       _init: function() {
-        console.log('init');
+        this.panels = $($.map($('ul li a', this.element), function(el) {
+          return $(el).attr('href');
+        }).join(', '));
+        this.tabs = $('ul li', this.element);
+        this.hide();
+        this.show(0);
+        this.panels.addClass('tab-panel');
       },
 
-      click: function() {
-        console.log('general click');
+      hide: function() {
+        this.tabs.removeClass('selected');
+        this.panels.hide();
+      },
+      
+      show: function(index) {
+        this.tabs.eq(index).addClass('selected');
+        this.panels.eq(index).show();
       },
 
       'li click': function(e) {
-        console.log('li click');
-      },
-
-      'li a mouseenter': function() {
-        console.log('mouseenter');
+        var tab = $(e.target).parent().get(0);
+        this.hide();
+        this.show(this.tabs.index(tab));
       }
     });
 
 
 
+
     $(function() {
+      $('.tabs').tabs();
       $('#div1 a, #list li').colorChangeBehavior();
       $('#list li').dog();
       $('#add_item').click(function() {
@@ -83,7 +95,7 @@
       font-family: Helvetica;
     }
     #container {
-      width: 500px;
+      width: 580px;
       margin: 0 auto;
     }
 
@@ -96,6 +108,40 @@
     #twitter_trends p {
       padding: 3px;
     }
+
+    .tabs {
+    }
+
+    .tabs ul {
+      background: #f7b64b;
+      list-style: none;
+      margin: 0;
+      overflow: auto;
+      padding: 3px 0 0 3px;
+    }
+
+    .tabs ul li {
+      background: #c3c3c3;
+      float: left; 
+      margin: 0 5px 1px 0;
+    }
+
+    .tabs ul li.selected {
+      background: #fff;
+      margin-bottom: 0;
+      padding-bottom: 1px;
+    }
+
+    .tabs ul li a {
+      display: block;
+      float: left;
+      padding: 5px 8px;
+    }
+
+    .tab-panel {
+      padding: 5px;
+    }
+
   </style>
 
 
@@ -151,10 +197,71 @@ $('#list li').colorChangeBehavior();
 
     </div>
     
+
+    <div class="example" id="tabs">
+    <h1>Tabs</h1>
+
+    <pre>
+    <code>
+$.behavior('demo.tabs', {
+  _init: function() {
+    this.panels = $($.map($('ul li a', this.element), function(el) {
+      return $(el).attr('href');
+    }).join(', '));
+    this.tabs = $('ul li', this.element);
+    this.hide();
+    this.show(0);
+    this.panels.addClass('tab-panel');
+  },
+
+  hide: function() {
+    this.tabs.removeClass('selected');
+    this.panels.hide();
+  },
+  
+  show: function(index) {
+    this.tabs.eq(index).addClass('selected');
+    this.panels.eq(index).show();
+  },
+
+  'li click': function(e) {
+    var tab = $(e.target).parent().get(0);
+    this.hide();
+    this.show(this.tabs.index(tab));
+  }
+});
+
+    </pre>
+    </code>
+
+      <div class='tabs'>
+        <ul>
+          <li>
+            <a href='#tab-1'>tab 1</a>
+          </li>
+          <li>
+            <a href='#tab-2'>tab 2</a>
+          </li>
+          <li>
+            <a href='#tab-3'>tab 3</a>
+          </li>
+        </ul>
+        <div id='tab-1'>
+          tab 1
+        </div>
+        <div id='tab-2'>
+          tab 2
+        </div>
+        <div id='tab-3'>
+          tab 3
+        </div>
+      </div>
     
   </div>
     
+    
   </div>
+
 
 
 </body>
