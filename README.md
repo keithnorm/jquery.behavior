@@ -50,16 +50,23 @@ Since this sits on top of $.widget, you get everything that it can do, so inheri
     $.behavior('demo.animal', {
       click: function() {
         this.speak();
+      },
+
+      speak: function() {
+        console.log('grrrrr');
       }
     });
 
     $.behavior('demo.dog', $.demo.animal, {
       speak: function() {
         console.log('woof');
+        this._super();
       }
     });
 
     $('a').dog();
+
+Notice you have access to the overridden method by calling this._super(). This implementation was inspired by John Resig's article on (Simple Javascript Inheritance)[http://ejohn.org/blog/simple-javascript-inheritance/]
 
 ## TODO
 When I added delegation I altered the regex that determines if a behavior method is an event handler, favoring names like 'click' instead of 'onclick'. Unfortunately this means that custom events that you could bind before by just defining oncustomevent no longer work. I will be adding a way to register custom events similar to JavascriptMVC.
