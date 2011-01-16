@@ -94,7 +94,7 @@
       };
     })($.fn[ name ]);
 
-    return proto;
+    return behavior;
   };
 
 })(jQuery);
