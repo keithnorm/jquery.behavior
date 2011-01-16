@@ -1,14 +1,23 @@
 describe('$.widget', function() {
 
   beforeEach(function() {
-    clicked = false;
 
-    $.behavior('ui.clicker', {
+    clicked = false;
+    superClicked = false;
+
+    $.behavior('ui.baseClicker', {
+      click: function() {
+        superClicked = true;
+      }
+    });
+
+    $.behavior('ui.clicker', $.ui.baseClicker, {
       _init: function() {
       },
 
       click: function() {
         clicked = true;
+        this._super();
       }
     });
 
@@ -20,6 +29,13 @@ describe('$.widget', function() {
     html.click();
 
     expect(clicked).toBeTruthy();
+  });
+
+  it('provides access to this._super method', function() {
+    html.clicker();
+    html.click();
+
+    expect(superClicked).toBeTruthy();
   });
 
   it('binds to elements added after initial dom load', function() {
@@ -61,9 +77,9 @@ describe('$.widget', function() {
 
   });
 
-  it('stores instances on the constructors instances array', function() {
+  //seemed to be causing a memory leak in IE
+  xit('stores instances on the constructors instances array', function() {
    html.clicker();
    expect($.ui.clicker.instances.length).toEqual(1);
   });
-
 });

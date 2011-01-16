@@ -27,21 +27,24 @@
     var namespace = name.split( "." )[ 0 ];
     name = name.split( "." )[ 1 ];
     
-    var object = $[ namespace ][ name ];
-    var behavior = $[ namespace ][ name ] = function(options, element) {
-      if ( arguments.length ) {
-        object.call(this, options, element);
-        $.each(this._bindings(), $.proxy(function(i, binding){
-          var handler = $.proxy(binding.method, this);
-          if(binding.target)
-            this.element.delegate(binding.target, binding.event, handler);
-          else
-            this.element.bind(binding.event, handler);
-        }, this));
-      }
-    };
+    //bind event methods
+    var original = $[ namespace ][ name ];
+    var behavior = $[ namespace ][ name ] = (function(original) {
+      return function(options, element) {
+        if ( arguments.length ) {
+          original.call(this, options, element);
+          $.each(this._bindings(), $.proxy(function(i, binding){
+            var handler = $.proxy(binding.method, this);
+            if(binding.target)
+              this.element.delegate(binding.target, binding.event, handler);
+            else
+              this.element.bind(binding.event, handler);
+          }, this));
+        }
+      };
+    })(original);
 
-    var proto = $[ namespace ][ name ].prototype = object.prototype;
+    var proto = $[ namespace ][ name ].prototype = original.prototype;
 
     // add _super method if we're overriding any methods on base class
     if(base.prototype){
@@ -67,31 +70,31 @@
 
     $.widget.bridge(name, $[ namespace ][ name ]);
 
-    var plugin = $.fn[ name ];
-
-    $.fn[ name ] = function( options ) {
-      $.each(this.selector.split(/,\s?/), function(i, selector) {
-        var behavior = $[ namespace ][ name ].prototype,
-            parts = selector.split(' '),
-            context = parts.length > 1 ? parts[0] : document;
-        selector = (parts.length > 1 ? parts.slice(1) : parts).join(' ');
-        $.each(behavior._bindings(), $.proxy(function(i, binding) {
-          var handler = function(event) {
-            if(!$(this).data(name)) {
-              var instance = $(this)[name].call($(this)).data(name);
-              instance[event.type].call(instance, event, this);
+    $.fn[ name ] = (function(original) {
+      return function( options ) {
+        $.each(this.selector.split(/,\s?/), function(i, selector) {
+          var behavior = $[ namespace ][ name ].prototype,
+              parts = selector.split(' '),
+              context = parts.length > 1 ? parts[0] : document;
+          selector = (parts.length > 1 ? parts.slice(1) : parts).join(' ');
+          $.each(behavior._bindings(), $.proxy(function(i, binding) {
+            var handler = function(event) {
+              if(!$(this).data(name)) {
+                var instance = $(this)[name].call($(this)).data(name);
+                instance[event.type].call(instance, event, this);
+              }
+            };
+            if(!binding.target){
+              $(context).delegate(selector, binding.event, handler);
             }
-          };
-          if(!binding.target){
-            $(context).delegate(selector, binding.event, handler);
-          }
-        }, this));
-      });
-      var returnVal = plugin.call(this, options);
-      return returnVal;
-    };
-    
-    return behavior;
+          }, this));
+        });
+        var returnVal = original.call(this, options);
+        return returnVal;
+      };
+    })($.fn[ name ]);
+
+    return proto;
   };
 
 })(jQuery);
