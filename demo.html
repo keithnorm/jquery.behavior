@@ -18,11 +18,8 @@
     $.behavior('demo.highlighter', {
       click: function() {
         this.element.effect('highlight');
-        },
-
-      mouseenter: function() {
-        console.log('super');
       }
+
     });
 
     $.behavior('demo.colorChangeBehavior', $.demo.highlighter, {
@@ -36,11 +33,6 @@
         this._super();
       },
 
-      mouseenter: function() {
-        console.log('sub');
-        this._super();
-      },
-
       _randomHex: function() {
         return Math.floor(Math.random()*16777215).toString(16);
       }
@@ -50,11 +42,17 @@
     $.behavior('demo.animal', {
       click: function() {
         this.speak();
+      },
+
+      speak: function() {
+        console.log('animal says: grrrrr');
       }
     });
 
     $.behavior('demo.dog', $.demo.animal, {
       speak: function() {
+        console.log('dog says: woof');
+        this._super();
       }
     });
 
