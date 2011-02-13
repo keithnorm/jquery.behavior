@@ -18,7 +18,7 @@
   });
 
   $.extend($.Widget, {
-    revent: /([\w\s]+\s)?(change|click|contextmenu|dblclick|keydown|keyup|keypress|mousedown|mousemove|mouseout|mouseover|mouseup|reset|windowresize|resize|windowscroll|scroll|select|submit|dblclick|focusin|focusout|load|unload|ready|hashchange|mouseenter|mouseleave)/
+    revent: /([\w\s\.#\[\]="']+)?(?:\s|^)(change|click|contextmenu|dblclick|keydown|keyup|keypress|mousedown|mousemove|mouseout|mouseover|mouseup|reset|windowresize|resize|windowscroll|scroll|select|submit|dblclick|focusin|focusout|load|unload|ready|hashchange|mouseenter|mouseleave)/
   }); 
 
   $.behavior = function(name, base, prototype) {
@@ -27,24 +27,21 @@
     var namespace = name.split( "." )[ 0 ];
     name = name.split( "." )[ 1 ];
     
-    //bind event methods
-    var original = $[ namespace ][ name ];
-    var behavior = $[ namespace ][ name ] = (function(original) {
-      return function(options, element) {
-        if ( arguments.length ) {
-          original.call(this, options, element);
-          $.each(this._bindings(), $.proxy(function(i, binding){
-            var handler = $.proxy(binding.method, this);
-            if(binding.target)
-              this.element.delegate(binding.target, binding.event, handler);
-            else
-              this.element.bind(binding.event, handler);
-          }, this));
-        }
-      };
-    })(original);
+    var object = $[ namespace ][ name ];
+    var behavior = $[ namespace ][ name ] = function(options, element) {
+      if ( arguments.length ) {
+        object.call(this, options, element);
+        $.each(this._bindings(), $.proxy(function(i, binding){
+          var handler = $.proxy(binding.method, this);
+          if(binding.target)
+            this.element.delegate(binding.target, binding.event, handler);
+          else
+            this.element.bind(binding.event, handler);
+        }, this));
+      }
+    };
 
-    var proto = $[ namespace ][ name ].prototype = original.prototype;
+    var proto = $[ namespace ][ name ].prototype = object.prototype;
 
     // add _super method if we're overriding any methods on base class
     if(base.prototype){
@@ -70,30 +67,31 @@
 
     $.widget.bridge(name, $[ namespace ][ name ]);
 
-    $.fn[ name ] = (function(original) {
-      return function( options ) {
-        $.each(this.selector.split(/,\s?/), function(i, selector) {
-          var behavior = $[ namespace ][ name ].prototype,
-              parts = selector.split(' '),
-              context = parts.length > 1 ? parts[0] : document;
-          selector = (parts.length > 1 ? parts.slice(1) : parts).join(' ');
-          $.each(behavior._bindings(), $.proxy(function(i, binding) {
-            var handler = function(event) {
-              if(!$(this).data(name)) {
-                var instance = $(this)[name].call($(this)).data(name);
-                instance[event.type].call(instance, event, this);
-              }
-            };
-            if(!binding.target){
-              $(context).delegate(selector, binding.event, handler);
-            }
-          }, this));
-        });
-        var returnVal = original.call(this, options);
-        return returnVal;
-      };
-    })($.fn[ name ]);
+    var plugin = $.fn[ name ];
 
+    //extend plugin method with .live delegation
+    $.fn[ name ] = function( options ) {
+      $.each(this.selector.split(/,\s?/), function(i, selector) {
+        var behavior = $[ namespace ][ name ].prototype,
+            parts = selector.split(' '),
+            context = parts.length > 1 ? parts[0] : document;
+        selector = (parts.length > 1 ? parts.slice(1) : parts).join(' ');
+        $.each(behavior._bindings(), $.proxy(function(i, binding) {
+          var handler = function(event) {
+            if(!$(this).data(name)) {
+              var instance = $(this)[name].call($(this)).data(name);
+              instance[event.type].call(instance, event, this);
+            }
+          };
+          if(!binding.target){
+            $(context).delegate(selector, binding.event, handler);
+          }
+        }, this));
+      });
+      var returnVal = plugin.call(this, options);
+      return returnVal;
+    };
+    
     return behavior;
   };
 
